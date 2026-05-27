@@ -1,10 +1,7 @@
 package main
 
 import (
-	"fmt"
 	"io"
-	"strings"
-	"text/template"
 )
 
 // Compose V2 uses "-" for container names: https://docs.docker.com/compose/migrate/#service-container-names
@@ -20,37 +17,16 @@ const (
 	ContainerRuntimePodman
 )
 
-func (c ContainerRuntime) String() string {
-	switch c {
-	case ContainerRuntimeDocker:
-		return "docker"
-	case ContainerRuntimePodman:
-		return "podman"
-	case ContainerRuntimeInvalid:
-		return "invalid-container-runtime"
-	default:
-		panic("Unreachable")
-	}
-}
+func (c ContainerRuntime) String() string { _ = "STUB: not implemented"; return "" }
 
 type Project struct {
 	Name      string
 	separator string
 }
 
-func NewProject(name string) *Project {
-	if name == "" {
-		return nil
-	}
-	return &Project{Name: name, separator: DefaultProjectSeparator}
-}
+func NewProject(name string) *Project { _ = "STUB: not implemented"; return nil }
 
-func (p *Project) With(name string) string {
-	if p == nil {
-		return name
-	}
-	return fmt.Sprintf("%s%s%s", p.Name, p.separator, name)
-}
+func (p *Project) With(name string) string { _ = "STUB: not implemented"; return "" }
 
 type IpamConfig struct {
 	Subnet       string
@@ -72,48 +48,9 @@ type NixNetwork struct {
 	ExtraOptions []string
 }
 
-func (n *NixNetwork) Unit() string {
-	return fmt.Sprintf("%s-network-%s.service", n.Runtime, n.Name)
-}
+func (n *NixNetwork) Unit() string { _ = "STUB: not implemented"; return "" }
 
-func (n *NixNetwork) Command() string {
-	cmd := fmt.Sprintf("%[1]s network inspect %[2]s || %[1]s network create %[2]s", n.Runtime, n.Name)
-	if n.Driver != "" {
-		cmd += fmt.Sprintf(" --driver=%s", n.Driver)
-	}
-	if len(n.DriverOpts) > 0 {
-		driverOpts := mapToRepeatedKeyValFlag("--opt", n.DriverOpts)
-		cmd += " " + strings.Join(driverOpts, " ")
-	}
-
-	if n.IpamDriver != "" {
-		cmd += fmt.Sprintf(" --ipam-driver=%s", n.IpamDriver)
-	}
-	for _, cfg := range n.IpamConfigs {
-		if cfg.Subnet != "" {
-			cmd += fmt.Sprintf(" --subnet=%s", cfg.Subnet)
-		}
-		if cfg.IPRange != "" {
-			cmd += fmt.Sprintf(" --ip-range=%s", cfg.IPRange)
-		}
-		if cfg.Gateway != "" {
-			cmd += fmt.Sprintf(" --gateway=%s", cfg.Gateway)
-		}
-		for _, addr := range cfg.AuxAddresses {
-			cmd += fmt.Sprintf(` --aux-address="%s"`, addr)
-		}
-	}
-
-	if len(n.ExtraOptions) > 0 {
-		cmd += " " + strings.Join(n.ExtraOptions, " ")
-	}
-
-	if len(n.Labels) > 0 {
-		labels := mapToRepeatedKeyValFlag("--label", n.Labels)
-		cmd += " " + strings.Join(labels, " ")
-	}
-	return cmd
-}
+func (n *NixNetwork) Command() string { _ = "STUB: not implemented"; return "" }
 
 type NixVolume struct {
 	Runtime           ContainerRuntime
@@ -126,29 +63,11 @@ type NixVolume struct {
 	RequiresMountsFor []string
 }
 
-func (v *NixVolume) Path() string {
-	return v.DriverOpts["device"]
-}
+func (v *NixVolume) Path() string { _ = "STUB: not implemented"; return "" }
 
-func (v *NixVolume) Unit() string {
-	return fmt.Sprintf("%s-volume-%s.service", v.Runtime, v.Name)
-}
+func (v *NixVolume) Unit() string { _ = "STUB: not implemented"; return "" }
 
-func (v *NixVolume) Command() string {
-	cmd := fmt.Sprintf("%[1]s volume inspect %[2]s || %[1]s volume create %[2]s", v.Runtime, v.Name)
-	if v.Driver != "" {
-		cmd += fmt.Sprintf(" --driver=%s", v.Driver)
-	}
-	if len(v.DriverOpts) > 0 {
-		driverOpts := mapToRepeatedKeyValFlag("--opt", v.DriverOpts)
-		cmd += " " + strings.Join(driverOpts, " ")
-	}
-	if len(v.Labels) > 0 {
-		labels := mapToRepeatedKeyValFlag("--label", v.Labels)
-		cmd += " " + strings.Join(labels, " ")
-	}
-	return cmd
-}
+func (v *NixVolume) Command() string { _ = "STUB: not implemented"; return "" }
 
 // NixContainerSystemdConfig configures the container's systemd config.
 // In particular, this allows control of the container restart policy through systemd
@@ -166,10 +85,8 @@ type NixContainerSystemdConfig struct {
 }
 
 func NewNixContainerSystemdConfig() *NixContainerSystemdConfig {
-	return &NixContainerSystemdConfig{
-		Service: ServiceConfig{},
-		Unit:    UnitConfig{},
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // https://search.nixos.org/options?channel=unstable&from=0&size=50&sort=relevance&type=packages&query=oci-container
@@ -193,9 +110,7 @@ type NixContainer struct {
 	SopsSecrets   []string
 }
 
-func (c *NixContainer) Unit() string {
-	return fmt.Sprintf("%s-%s.service", c.Runtime, c.Name)
-}
+func (c *NixContainer) Unit() string { _ = "STUB: not implemented"; return "" }
 
 // https://docs.docker.com/reference/compose-file/services/#pull_policy
 // https://docs.podman.io/en/latest/markdown/podman-build.1.html#pull-policy
@@ -211,18 +126,8 @@ const (
 )
 
 func NewServicePullPolicy(s string) ServicePullPolicy {
-	switch strings.TrimSpace(s) {
-	case "always":
-		return ServicePullPolicyAlways
-	case "never":
-		return ServicePullPolicyNever
-	case "missing", "if_not_present":
-		return ServicePullPolicyMissing
-	case "build":
-		return ServicePullPolicyBuild
-	default:
-		return ServicePullPolicyUnset
-	}
+	_ = "STUB: not implemented"
+	return *new(ServicePullPolicy)
 }
 
 // https://docs.docker.com/reference/compose-file/build/
@@ -238,39 +143,11 @@ type NixBuild struct {
 	ContainerName string // Name of the resolved Nix container.
 }
 
-func (b *NixBuild) UnitName() string {
-	return fmt.Sprintf("%s-build-%s", b.Runtime, b.ContainerName)
-}
+func (b *NixBuild) UnitName() string { _ = "STUB: not implemented"; return "" }
 
-func (b *NixBuild) Unit() string {
-	return b.UnitName() + ".service"
-}
+func (b *NixBuild) Unit() string { _ = "STUB: not implemented"; return "" }
 
-func (b *NixBuild) Command() string {
-	cmd := fmt.Sprintf("%s build", b.Runtime)
-
-	for _, tag := range b.Tags {
-		cmd += fmt.Sprintf(" -t %s", tag)
-	}
-	for name, arg := range b.Args {
-		if arg != nil {
-			cmd += fmt.Sprintf(" --build-arg %s=%s", name, *arg)
-		} else {
-			cmd += fmt.Sprintf(" --build-arg %s", name)
-		}
-	}
-	if b.Dockerfile != "" && b.Dockerfile != "Dockerfile" {
-		cmd += fmt.Sprintf(" -f %s", b.Dockerfile)
-	}
-
-	if b.IsGitRepo {
-		cmd += " " + b.Context
-	} else {
-		cmd += " ."
-	}
-
-	return cmd
-}
+func (b *NixBuild) Command() string { _ = "STUB: not implemented"; return "" }
 
 type NixContainerConfig struct {
 	Version          string
@@ -290,65 +167,27 @@ type NixContainerConfig struct {
 	SopsConfig       *SopsConfig
 }
 
-func (c *NixContainerConfig) HasSopsSecrets() bool {
-	for _, container := range c.Containers {
-		if len(container.SopsSecrets) > 0 {
-			return true
-		}
-	}
-	return false
-}
+func (c *NixContainerConfig) HasSopsSecrets() bool { _ = "STUB: not implemented"; return false }
 
-func (c *NixContainerConfig) String() string {
-	s := strings.Builder{}
-	internalFuncMap := template.FuncMap{
-		"cfg":            c.configTemplateFunc,
-		"execTemplate":   execTemplate(nixTemplates),
-		"indentNonEmpty": indentNonEmpty,
-		"rootTarget":     c.rootTargetTemplateFunc,
-	}
-	nixTemplates := template.Must(nixTemplates.Funcs(internalFuncMap).ParseFS(templateFS, "templates/*.tmpl"))
-	if err := nixTemplates.ExecuteTemplate(&s, "main.nix.tmpl", c); err != nil {
-		// This should never be hit under normal operation.
-		panic(err)
-	}
-	return s.String()
-}
+func (c *NixContainerConfig) String() string { _ = "STUB: not implemented"; return "" }
+
+// This should never be hit under normal operation.
 
 // Write writes out the Nix config to the provided Writer.
 //
 // If the AutoFormat option on this struct is set to "true", this method will
 // attempt to format the Nix config by calling "nixfmt" and passing in the
 // fully built config via stdin.
-func (c *NixContainerConfig) Write(out io.Writer) error {
-	config := []byte(c.String())
-
-	if c.AutoFormat {
-		formatted, err := formatNixCode(config)
-		if err != nil {
-			return err
-		}
-		config = formatted
-	}
-
-	if _, err := out.Write(config); err != nil {
-		return fmt.Errorf("failed to write Nix code: %w", err)
-	}
-
-	return nil
-}
+func (c *NixContainerConfig) Write(out io.Writer) error { _ = "STUB: not implemented"; return nil }
 
 func rootTarget(runtime ContainerRuntime, project *Project) string {
-	return fmt.Sprintf("%s-compose-%s", runtime, project.With("root"))
+	_ = "STUB: not implemented"
+	return ""
 }
 
-func (c *NixContainerConfig) rootTargetTemplateFunc() string {
-	if !c.CreateRootTarget {
-		return ""
-	}
-	return rootTarget(c.Runtime, c.Project)
-}
+func (c *NixContainerConfig) rootTargetTemplateFunc() string { _ = "STUB: not implemented"; return "" }
 
 func (c *NixContainerConfig) configTemplateFunc() *NixContainerConfig {
-	return c
+	_ = "STUB: not implemented"
+	return nil
 }

@@ -49,9 +49,7 @@ var version = flag.Bool("version", false, "display version and exit")
 
 type OsGetWd struct{}
 
-func (*OsGetWd) GetWd() (string, error) {
-	return os.Getwd()
-}
+func (*OsGetWd) GetWd() (string, error) { _ = "STUB: not implemented"; return "", nil }
 
 func main() {
 	flag.Parse()
